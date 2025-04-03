@@ -18,30 +18,43 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dalmuina.pruebamango.heroes.presentation.HeroListAction
 import com.dalmuina.pruebamango.heroes.presentation.components.CardHero
 import com.dalmuina.pruebamango.heroes.presentation.components.ErrorItem
 import com.dalmuina.pruebamango.heroes.presentation.components.Loader
 import com.dalmuina.pruebamango.heroes.presentation.components.MainTopBar
 import com.dalmuina.pruebamango.heroes.presentation.components.ShimmerListItem
 import com.dalmuina.pruebamango.heroes.presentation.model.HeroUi
+import com.dalmuina.pruebamango.heroes.presentation.navigation.Detail
 import com.dalmuina.pruebamango.heroes.presentation.viewmodel.HeroesViewModel
 import com.dalmuina.pruebamango.ui.theme.primaryContainerDark
 
 @Composable
 fun HomeViewWrapper(
     viewModel: HeroesViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickDetail:(Detail)->Unit
 ) {
     val heroesPagingItems = viewModel.heroesPagingFlow.collectAsLazyPagingItems()
     HomeViewScreen(
         heroesPagingItems = heroesPagingItems,
-        modifier = modifier)
+        modifier = modifier,
+        onAction = {action ->
+            when(action) {
+                is HeroListAction.OnLoadHeroDetail -> {
+                    onClickDetail(Detail(action.id))
+                }
+                else -> viewModel.onAction(action)
+            }
+        }
+    )
 }
 
 @Composable
 fun HomeViewScreen(
     heroesPagingItems: LazyPagingItems<HeroUi>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAction:(HeroListAction)->Unit
 ) {
     Scaffold (
         modifier = modifier,
@@ -58,7 +71,10 @@ fun HomeViewScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HeroListContent(
-                heroesPagingItems
+                heroesPagingItems,
+                onItemClick = {hero->
+                    onAction(HeroListAction.OnLoadHeroDetail(hero.id))
+                }
             )
         }
     }
@@ -66,7 +82,8 @@ fun HomeViewScreen(
 
 @Composable
 fun HeroListContent(
-    heroesPagingItems: LazyPagingItems<HeroUi>
+    heroesPagingItems: LazyPagingItems<HeroUi>,
+    onItemClick: (HeroUi) -> Unit
 ) {
     val isLoading = heroesPagingItems.loadState.refresh is LoadState.Loading
     LazyColumn (
@@ -91,7 +108,7 @@ fun HeroListContent(
                     isLoading = hero == null,
                     contentAfterLoading = {
                         if (hero != null) {
-                            CardHero(hero, onClick = {})
+                            CardHero(hero, onClick = {onItemClick(hero)})
                             Text(
                                 text = hero.name,
                                 fontWeight = FontWeight.ExtraBold,
