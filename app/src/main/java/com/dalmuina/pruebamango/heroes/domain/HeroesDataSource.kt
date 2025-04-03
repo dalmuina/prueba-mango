@@ -9,7 +9,9 @@ import com.dalmuina.pruebamango.heroes.domain.model.Hero
 import kotlinx.serialization.SerializationException
 import java.io.IOException
 
-class HeroesDataSource(private val repository: HeroRepository)
+class HeroesDataSource(
+    private val repository: HeroRepository,
+    private val filter: String = "")
     : PagingSource<Int,Hero>()
 {
     override fun getRefreshKey(state: PagingState<Int, Hero>): Int? {
@@ -26,7 +28,7 @@ class HeroesDataSource(private val repository: HeroRepository)
         )) {
             is Result.Success -> {
                 LoadResult.Page(
-                    data = result.data.results,
+                    data = result.data.results.filter { it.name.contains(filter, ignoreCase = true) },
                     prevKey = null, // Only forward paging
                     nextKey = if (result.data.results.isNotEmpty()) {
                         (params.key ?: 1) + 1

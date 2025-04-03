@@ -53,6 +53,7 @@ fun DetailViewWrapper(
                 is HeroListAction.OnLoadHeroDetail -> {
                     viewModel.onAction(action)
                 }
+                else -> Unit
             }
         }
     )
