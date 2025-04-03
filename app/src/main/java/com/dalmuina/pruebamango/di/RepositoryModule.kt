@@ -8,3 +8,4 @@ val RepositoryModule = module {
         HeroRepository(apiClient = get())
     }
 }
+

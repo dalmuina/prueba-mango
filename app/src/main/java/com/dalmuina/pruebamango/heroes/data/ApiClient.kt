@@ -10,5 +10,7 @@ import retrofit2.http.Query
 interface ApiClient {
 
     @GET(ENDPOINT + API_KEY)
-    suspend fun getAllHeroesPagingFromApi(@Query("page") page:Int,@Query("page_size") pageSize:Int ): Response<HeroesResponseDto>
+    suspend fun getAllHeroesPagingFromApi(
+        @Query("page") page:Int,
+        @Query("page_size") pageSize:Int ): Response<HeroesResponseDto>
 }
