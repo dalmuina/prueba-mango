@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="800dp"
+    android:height="600dp"
+    android:viewportWidth="800"
+    android:viewportHeight="600">
+  <group
+      android:name="animationGroup"
+      android:pivotX="400"
+      android:pivotY="300">
+    <path
+        android:fillColor="#FF000000"
+        android:strokeWidth="1"
+        android:pathData="m123.62,0l-123.62,0l0,600.87l122.57,0l0,-413.11l278.32,366.81l70.89,-93.58l-348.12,-460.98m413.55,374.23c47.31,-62.16 94.61,-124.31 141.92,-186.47l0,413.08l122.28,0l0,-600.83l-124.76,0l-209.99,281.99"
+        android:strokeColor="#FF000000"/>
+  </group>
+</vector>

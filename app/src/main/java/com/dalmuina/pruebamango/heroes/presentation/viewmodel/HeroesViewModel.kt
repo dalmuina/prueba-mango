@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import androidx.paging.map
 import com.dalmuina.pruebamango.core.domain.onError
 import com.dalmuina.pruebamango.core.domain.onSuccess
@@ -20,6 +21,7 @@ import com.dalmuina.pruebamango.heroes.presentation.state.HeroDetailState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,6 +43,8 @@ class HeroesViewModel(
         .map{ pagingData->
             pagingData.map {
                 it.toHeroUi()
+            }.filter {
+                it.name.contains("")
             }
         }.cachedIn(viewModelScope)
 
