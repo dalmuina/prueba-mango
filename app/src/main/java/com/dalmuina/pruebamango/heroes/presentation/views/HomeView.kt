@@ -8,14 +8,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dalmuina.pruebamango.heroes.presentation.components.MainTopBar
 import com.dalmuina.pruebamango.heroes.presentation.model.HeroUi
+import com.dalmuina.pruebamango.heroes.presentation.viewmodel.HeroesViewModel
 
 @Composable
 fun HomeViewWrapper(
+    viewModel: HeroesViewModel,
     modifier: Modifier = Modifier
 ) {
-
+    val gamesPagingItems = viewModel.heroesPagingFlow.collectAsLazyPagingItems()
+    HomeViewScreen(gamesPagingItems)
 }
 
 @Composable

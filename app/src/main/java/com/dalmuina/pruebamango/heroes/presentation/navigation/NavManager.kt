@@ -20,6 +20,7 @@ fun NavManager(
     NavHost(navController = navController, startDestination = Home) {
         composable<Home>{
             HomeViewWrapper(
+                viewModel= viewModel,
                 modifier= modifier
             )
         }
