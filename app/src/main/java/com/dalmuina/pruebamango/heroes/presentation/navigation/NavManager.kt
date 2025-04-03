@@ -21,13 +21,21 @@ fun NavManager(
         composable<Home>{
             HomeViewWrapper(
                 viewModel= viewModel,
-                modifier= modifier
+                modifier= modifier,
+                onClickDetail = {detail ->
+                    navController.navigate(detail)
+                }
             )
         }
         composable<Detail>{backStackEntry->
             val detail = backStackEntry.toRoute<Detail>()
             DetailViewWrapper(
-                modifier = modifier
+                viewModel = viewModel,
+                id = detail.id,
+                modifier = modifier,
+                onClickBack = {
+                    navController.popBackStack(Home,false)
+                }
             )
         }
     }
