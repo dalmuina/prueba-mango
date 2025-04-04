@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.dalmuina.pruebamango.core.domain.onError
@@ -15,22 +16,26 @@ import com.dalmuina.pruebamango.heroes.presentation.HeroListAction
 import com.dalmuina.pruebamango.heroes.presentation.model.toHeroDetailUi
 import com.dalmuina.pruebamango.heroes.presentation.model.toHeroUi
 import com.dalmuina.pruebamango.heroes.presentation.state.HeroDetailState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class HeroesViewModel(
     private val repository: HeroRepository,
-    private val getHeroByIdUseCase: GetHeroByIdUseCase
+    private val getHeroByIdUseCase: GetHeroByIdUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): ViewModel() {
 
     private val _filter = MutableStateFlow("")
@@ -64,15 +69,16 @@ class HeroesViewModel(
                 loadGameDetail(action.id)
             }
             is HeroListAction.OnFilterChange -> {
-                _filter.update {
-                    action.filter }
+                if (_filter.value != action.filter) {
+                    _filter.update { action.filter }
+                }
             }
             HeroListAction.OnBackButtonClick -> Unit
         }
     }
 
     fun loadGameDetail(id:Int){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             _detail.update { it.copy(
                 isLoading = true
             )}

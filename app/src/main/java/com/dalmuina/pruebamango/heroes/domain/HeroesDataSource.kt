@@ -11,9 +11,9 @@ import java.io.IOException
 
 class HeroesDataSource(
     private val repository: HeroRepository,
-    private val filter: String = "")
-    : PagingSource<Int,Hero>()
-{
+    private val filter: String = ""
+) : PagingSource<Int, Hero>() {
+
     override fun getRefreshKey(state: PagingState<Int, Hero>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -22,17 +22,18 @@ class HeroesDataSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Hero> {
-        return when (val result = repository.getAllHeroesPagingFromApi(
-            page = params.key ?: 1,
-            pageSize = params.loadSize
-        )) {
+        val page = params.key ?: 1
+
+        return when (val result = repository.getAllHeroesPagingFromApi(page, params.loadSize)) {
             is Result.Success -> {
+                val filteredResults = result.data.results.filter {
+                    it.name.contains(filter, ignoreCase = true)
+                }
+
                 LoadResult.Page(
-                    data = result.data.results.filter { it.name.contains(filter, ignoreCase = true) },
-                    prevKey = null, // Only forward paging
-                    nextKey = if (result.data.results.isNotEmpty()) {
-                        (params.key ?: 1) + 1
-                    } else null
+                    data = filteredResults,
+                    prevKey = if (page == 1) null else page - 1,  // Correct previous key
+                    nextKey = if (filteredResults.isNotEmpty()) page + 1 else null // Ensure proper next key
                 )
             }
             is Result.Error -> {
